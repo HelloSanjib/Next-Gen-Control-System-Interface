@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  background: #05070b;
+}
+
+body {
+  margin: 0;
+  color: #e5eef5;
+  background:
+    linear-gradient(180deg, rgba(49, 214, 255, 0.08), transparent 34rem),
+    radial-gradient(circle at 18% 0%, rgba(53, 208, 143, 0.08), transparent 30rem),
+    #05070b;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(49, 214, 255, 0.32);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #071019;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #294255;
+  border: 2px solid #071019;
+}
+
+@layer components {
+  .control-panel {
+    @apply border border-control-edge bg-control-panel/90 shadow-panel backdrop-blur;
+  }
+
+  .control-button {
+    @apply inline-flex h-9 items-center justify-center gap-2 rounded-md border border-control-line bg-control-panel2 px-3 text-sm font-medium text-control-text transition hover:border-process-cyan/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-process-cyan/60;
+  }
+
+  .metric-label {
+    @apply text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-control-muted;
+  }
+
+  .signal-line {
+    background-image: linear-gradient(90deg, rgba(49, 214, 255, 0), rgba(49, 214, 255, 0.55), rgba(49, 214, 255, 0));
+  }
+}

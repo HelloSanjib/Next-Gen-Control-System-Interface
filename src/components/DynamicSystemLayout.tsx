@@ -10,6 +10,7 @@ import {
   RadioTower,
   Snowflake,
   Thermometer,
+  TrendingUp,
   Waves
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -59,7 +60,7 @@ function findSystem(systems: IndustrialSystem[], id: string) {
 }
 
 export function DynamicSystemLayout() {
-  const { selectedSystemId, setSelectedSystemId, systems } = useControlRoom();
+  const { selectedSystemId, setSelectedSystemId, systems, anomalyMap } = useControlRoom();
   const prioritized = useMemo(() => [...systems].sort((a, b) => b.priority - a.priority), [systems]);
   const topSystems = prioritized.slice(0, 4);
   const normalSystems = systems.filter((system) => system.status === "normal");
@@ -108,6 +109,7 @@ export function DynamicSystemLayout() {
             const Icon = iconByKind[system.kind];
             const active = selectedSystemId === system.id;
             const critical = system.status === "critical";
+            const anomaly = anomalyMap[system.id];
 
             return (
               <motion.button
@@ -116,7 +118,7 @@ export function DynamicSystemLayout() {
                 title={`${system.name} ${system.status}`}
                 onClick={() => setSelectedSystemId(system.id)}
                 className={cn(
-                  "absolute flex min-h-16 w-[9.5rem] -translate-x-1/2 -translate-y-1/2 items-center gap-3 rounded-lg border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-process-cyan",
+                  "absolute flex min-h-16 w-[9.5rem] -translate-x-1/2 -translate-y-1/2 flex-col gap-1.5 rounded-lg border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-process-cyan",
                   nodeTone(system.status),
                   active && "ring-2 ring-process-cyan",
                   system.status === "normal" && !active && "opacity-55 hover:opacity-90"
@@ -125,16 +127,31 @@ export function DynamicSystemLayout() {
                 animate={critical ? { scale: [1, 1.035, 1] } : { scale: 1 }}
                 transition={critical ? { duration: 1.5, repeat: Infinity, ease: "easeInOut" } : undefined}
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30">
-                  <Icon className="h-5 w-5" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-white">{system.name}</span>
-                  <span className="mt-1 flex items-center gap-1 text-xs capitalize text-control-muted">
-                    {critical && <AlertTriangle className="h-3.5 w-3.5 text-alarm-critical" />}
-                    {system.status} · P{formatNumber(system.priority)}
+                <span className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-white">{system.name}</span>
+                    <span className="mt-0.5 flex items-center gap-1 text-xs capitalize text-control-muted">
+                      {critical && <AlertTriangle className="h-3 w-3 text-alarm-critical" />}
+                      {system.status} · P{formatNumber(system.priority)}
+                    </span>
                   </span>
                 </span>
+                {anomaly.isAtRisk && (
+                  <span
+                    className={cn(
+                      "flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.6rem] font-semibold",
+                      anomaly.severity === "critical"
+                        ? "bg-alarm-critical/20 text-red-200 border border-alarm-critical/40"
+                        : "bg-alarm-medium/20 text-yellow-200 border border-alarm-medium/40"
+                    )}
+                  >
+                    <TrendingUp className="h-2.5 w-2.5" />
+                    {anomaly.leadingMetric} → {anomaly.predictedMinutes}m
+                  </span>
+                )}
               </motion.button>
             );
           })}

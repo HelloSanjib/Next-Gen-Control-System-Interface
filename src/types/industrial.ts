@@ -116,3 +116,18 @@ export interface TriageResponse {
   suppressionRate: number;
   narrative: string;
 }
+
+export interface AnomalyPrediction {
+  isAtRisk: boolean;
+  severity: "critical" | "warning" | null;
+  predictedMinutes: number | null;
+  leadingMetric: string | null;
+  confidence: number;
+}
+
+export interface AlertHistoryEntry {
+  label: string;
+  count: number;
+  critical: number;
+  high: number;
+}
